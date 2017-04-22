@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * 商品库存Repository
  * @author mengqianyu <mqycn@sina.cn> 
  * @version 1.0

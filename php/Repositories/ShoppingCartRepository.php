@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * 购物车Repository
  * @author mengqianyu <mqycn@sina.cn> 
  * @version 1.0

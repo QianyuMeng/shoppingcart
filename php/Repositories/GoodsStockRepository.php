@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * 商品库存Repository
  * @author mengqianyu <mqycn@sina.cn> 
  * @version 1.0
@@ -16,11 +16,6 @@ class GoodsStockRepository
     const STOCK_LOCK_COUNT_LOG_HASH = 'GOODS_STOCK_LOCK_COUNT_LOG'; //redis hash,记录商品锁定数量用户日志，用于过期自动释放锁定库存
     const STOCK_LOCK_TIME_LOG_SET = 'GOODS_STOCK_LOCK_TIME_LOG'; //redis sorted set,记录商品锁定持续时间用户日志，用于过期自动释放锁定库存
     const LOCK_TIME = 1800;
-
-    //旧版活动商品库存，来自ActivityPanicService
-    const REDIS_ACTIVITY_GOODS_NUM = 'com.juanpi.in.activity.goods.sale';
-    //商品数据缓存redis key 有效期，来自ActivityPanicService
-    const REDIS_ACTIVITY_PANIC_KEY_EXPIRE = 60 * 24 * 3600;
 
     private $_redis;
     private $_lastError;
@@ -204,39 +199,4 @@ class GoodsStockRepository
     }
 
 
-    /**
-     * 活动商品 - 锁库存
-     * 取自ActivityPanicService
-     * @param $scheduleId
-     * @param $goodsId
-     * @param $num
-     * @return int
-     */
-    public function lockScheduleGoodsStock($scheduleId, $goodsId, $num)
-    {
-        $redis = RedisHandle::getInstance(RedisHandle::_configMapi)->redis();
-        $key = static::REDIS_ACTIVITY_GOODS_NUM . '.' . $goodsId . '-' . $scheduleId;
-        $num = $redis->incrBy($key, $num);
-        //防止过期,所以不停的刷新时间
-        $redis->expire($key, self::REDIS_ACTIVITY_PANIC_KEY_EXPIRE);
-        return intval($num);
-    }
-
-
-    /**
-     * 活动商品 - 释放库存
-     * 取自ActivityPanicService
-     * @param $scheduleId
-     * @param $goodsId int
-     * @param $num int
-     * @return int
-     */
-    public function unlockScheduleGoodsStock($scheduleId, $goodsId, $num)
-    {
-        $redis = RedisHandle::getInstance(RedisHandle::_configMapi)->redis();
-        $key = static::REDIS_ACTIVITY_GOODS_NUM . '.' . $goodsId . '-' . $scheduleId;
-        $num = $redis->decrBy($key, $num);
-        $redis->expire($key, self::REDIS_ACTIVITY_PANIC_KEY_EXPIRE);
-        return intval($num);
-    }
-}
+  }
